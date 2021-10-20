@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
 use App\TokenStore\TokenCache;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {

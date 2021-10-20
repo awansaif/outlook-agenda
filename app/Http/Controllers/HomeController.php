@@ -9,7 +9,6 @@ class HomeController extends Controller
 {
     public function dashboard()
     {
-
         // get token
         $accessToken = session()->get('accessToken');
 
@@ -19,8 +18,8 @@ class HomeController extends Controller
 
         // param for query to fecth calendar data
         $queryParams = array(
-            'startDateTime' => '2019-10-01T01:00:00',
-            'endDateTime' => '2021-12-01T01:00:00',
+            'startDateTime' => '2019-01-01T01:00:00.0000000',
+            'endDateTime' => '2021-12-31T12:00:00.0000000',
             // Only request the properties used by the app
             '$select' => 'subject,organizer,start,end',
             // Sort them by` start time
@@ -31,15 +30,19 @@ class HomeController extends Controller
         $getEventsUrl = '/me/calendarView?' . http_build_query($queryParams);
 
 
+        if (session()->get('userTimeZone') != null) {
+            $timezone = 'outlook.timezone="' .  session()->get('userTimeZone') . '"';
+        } else {
+            $timezone = 'outlook.timezone="Pacific Standard Time"';
+        }
         // get data
         $events = $authorized->createRequest('GET', $getEventsUrl)
             ->addHeaders(array(
-                'Prefer' => 'outlook.timezone="' . session()->get('userTimeZone') . '"'
+                'Prefer' => $timezone
             ))
             ->setReturnType(Model\Event::class)
             ->execute();
 
-        // $viewData['events'] = $events;
         return view('home', [
             'events' => $events
         ]);
