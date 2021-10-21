@@ -2,7 +2,7 @@
 
 @section('content')
 <h1 class="mt-5 float-left">MY AGENDA</h1>
-{{-- <a href="{{ Route('agenda.create') }}" class="mt-5 btn btn-success float-right">Add Agenda</a> --}}
+<a href="{{ Route('agenda.create') }}" class="mt-5 btn btn-success float-right">Add Agenda</a>
 <table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
