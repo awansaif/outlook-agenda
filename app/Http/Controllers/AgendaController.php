@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\TokenStore\TokenCache;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Microsoft\Graph\Graph;
@@ -11,7 +12,20 @@ class AgendaController extends Controller
 {
     public function create()
     {
-        return view('agenda.create');
+        $tokenCache = new TokenCache();
+        $accessToken = $tokenCache->getAccessToken();
+
+        $authorization = new Graph();
+
+        $authorization->setAccessToken($accessToken);
+
+        $categories = $authorization->createRequest('GET', '/me/outlook/masterCategories')
+            ->setReturnType(Model\Event::class)
+            ->execute();
+
+        return view('agenda.create', [
+            'categories' => $categories
+        ]);
     }
 
 
@@ -22,19 +36,23 @@ class AgendaController extends Controller
             'subject' => 'required|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
+            'event_color' => 'required',
+            'location' => 'required',
             'body' => 'nullable|string'
         ]);
 
         // get token
-        $accessToken = session()->get('accessToken');
+        $tokenCache = new TokenCache();
+        $accessToken = $tokenCache->getAccessToken();
 
         // authorized api
         $authorization = new Graph();
-        $authorized = $authorization->setAccessToken($accessToken);
+        $authorization->setAccessToken($accessToken);
 
         // Build the event
         $newEvent = [
             'subject' => $request->subject,
+            'categories' =>  [$request->event_color],
             'start' => [
                 'dateTime' => $request->start_date,
                 'timeZone' => session()->get('userTimeZone') != null ? session()->get('userTimeZone') : 'Pacific Standard Time'
@@ -47,11 +65,15 @@ class AgendaController extends Controller
             'body' => [
                 'content' => $request->body,
                 'contentType' => 'text'
+            ],
+            'location' => [
+                'displayName' => $request->location
             ]
+
         ];
 
         // POST /me/events
-        $authorized->createRequest('POST', '/me/events')
+        $authorization->createRequest('POST', '/me/events')
             ->attachBody($newEvent)
             ->setReturnType(Model\Event::class)
             ->execute();

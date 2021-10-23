@@ -11,20 +11,32 @@
             <th scope="col">Subject</th>
             <th scope="col">Start</th>
             <th scope="col">End</th>
+            <th scope="col">Location</th>
         </tr>
     </thead>
     <tbody>
         @isset($events)
         @foreach($events as $key => $event)
         <tr>
-           <td> {{ $key + 1 }}</td>
+            <td> {{ $key + 1 }}</td>
             <td>{{ $event->getOrganizer()->getEmailAddress()->getName() }}</td>
             <td>{{ $event->getSubject() }}</td>
             <td>{{ \Carbon\Carbon::parse($event->getStart()->getDateTime())->format('n/j/y g:i A') }}</td>
             <td>{{ \Carbon\Carbon::parse($event->getEnd()->getDateTime())->format('n/j/y g:i A') }}</td>
+            <td>{{ $event->getLocation()->getDisplayName() }}</td>
         </tr>
         @endforeach
         @endif
     </tbody>
+    <tfoot>
+        <tr>
+            <th>#</th>
+            <th scope="col">Organizer</th>
+            <th scope="col">Subject</th>
+            <th scope="col">Start</th>
+            <th scope="col">End</th>
+            <th scope="col">Location</th>
+        </tr>
+    </tfoot>
 </table>
 @endsection

@@ -30,3 +30,9 @@ Route::middleware('sessionAuth')->group(function () {
     // create agenda
     Route::resource('agenda', AgendaController::class);
 });
+
+
+
+// Develop by saif ur rehman
+// Email: m.awan.saifurrehman@gmail.com
+// Phone #: +923077521235
